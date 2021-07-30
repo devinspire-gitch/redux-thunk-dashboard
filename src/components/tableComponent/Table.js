@@ -1,4 +1,4 @@
-import { React, useState, useEffect} from 'react';
+import  React, { useState, useEffect } from 'react';
 import { alpha, makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -54,18 +54,8 @@ const useStyles = makeStyles((theme) => ({
     },
 
     container: {
-        maxHeight: '60vh',
+        maxHeight: '50vh',
         overflow: 'auto',
-    },
-
-    textEllipsisContainer: {
-      whiteSpace: 'nowrap',
-      overflow: 'hidden',
-      textOverflow: 'ellipsis',
-    },
-
-    textNoEllipsisContainer: {
-      whiteSpace: 'nowrap',
     },
   
     table: {
@@ -168,7 +158,6 @@ export default function DataTable(props) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [rows, setRows] = useState([]);
   const [searched, setSearched] = useState('');
-  const [ellipsis, setEllipsis] = useState(false);
 
   //user and todo data
   const data = props.data
@@ -212,9 +201,12 @@ export default function DataTable(props) {
     setOrderBy('');
   }
 
-  const handleEllipsis = (e, b) => {
-    console.log(e.target.textContent);
-    setEllipsis(b)
+  const handleEllipsis = (e) => {
+    if(e.target.className.includes('text-wrap')){
+      e.target.className="c-pointer"
+    }else{
+      e.target.className="c-pointer text-wrap"
+    }
   }
 
   useEffect(() => {
@@ -232,9 +224,8 @@ export default function DataTable(props) {
              row.completed.toLowerCase().includes(searched.toLowerCase()));
     });
     setRows(filterRows);
-  }, [searched, ellipsis])
+  }, [searched])
 
-  const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
   return (
     <div className={ classes.root}>
         <div className={classes.titleBar}>
@@ -313,35 +304,26 @@ export default function DataTable(props) {
               {stableSort(rows, getComparator(order, orderBy))
                 .slice((page - 1)  * rowsPerPage, (page - 1 ) * rowsPerPage + rowsPerPage)
                 .map((row, index) => {
-                  const labelId = `enhanced-table-checkbox-${index}`;
                   return (
                     <TableRow
                       hover
-                      role="checkbox"
                       tabIndex={-1}
                       key={row.name}
                     >
-                      {headCells.map((column) => {
+                      {headCells.map((column, colindex) => {
                         const value = row[column.id];
+                        const cellId = `${index}${colindex + 1}`
                         return (
-                           value.length > 20 && !ellipsis?
                               <TableCell 
-                                key={column.id}            
+                                key={cellId}
                                 align={column.booleanType ? 'right' : 'left'}
                                 padding={column.disablePadding ? 'none' : 'normal'}
-                                onClick={(event) => handleEllipsis(event, true)}
                                 >
-                                <div className={classes.textEllipsisContainer}>{value.substring(0, 20) + '...'}</div>
-                                </TableCell> :
- 
-                                <TableCell 
-                                key={column.id}            
-                                align={column.booleanType ? 'right' : 'left'}
-                                padding={column.disablePadding ? 'none' : 'normal'}
-                                onClick={(event) => handleEllipsis(event, false)}
-                                >
-                                   <div className={classes.textEllipsisContainer}>{value}</div> 
-                                </TableCell>                                  
+                                  <div className="c-pointer text-wrap "
+                                  onDoubleClick = {handleEllipsis}
+                                  >{value}</div> 
+                                
+                                </TableCell>                                
                         )
                       })}
                     </TableRow>

@@ -10,3 +10,13 @@
   padding: 20px;
 }
 
+.text-wrap {
+  width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.c-pointer{
+  cursor: pointer;
+}

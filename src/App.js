@@ -1,6 +1,6 @@
 
 import './App.css';
-import React, {useState, useEffect, useDispatch, useSelector} from 'react';
+import React, {useEffect} from 'react';
 import NavBar from './components/navBarComponent/NavBar';
 import DataTable from './components/tableComponent/Table';
 import Footer from './components/footerComponet/Footer';
