@@ -1,0 +1,46 @@
+.navbar-container {
+    background: #091224;
+    height: 10vh;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+}
+
+.left-container {
+    margin-left: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+img {
+    margin-left: 20px;
+}
+
+.menu-bar {
+    display: flex;
+    bottom: 0;
+}
+
+.menu-bar span {
+    margin-right: 20px;
+    cursor: pointer;
+}
+
+.signout {
+    margin-right: 20px;
+    cursor: pointer;
+}
+
+.MuiButton-label {
+    color: white;
+}
+
+button {
+    padding: 0px 8px! important;
+}
+
+.dropdown-menu {
+    display: flex;
+}

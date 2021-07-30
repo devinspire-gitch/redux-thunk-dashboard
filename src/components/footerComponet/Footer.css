@@ -1,0 +1,14 @@
+.footer-container {
+    position: absolute;
+    bottom: 0;
+    width: 100vw;
+    height: 5vh;;
+    background: #091224;
+    color: white;
+    display: flex;
+    justify-content: flex-end;
+}
+
+p {
+    margin-right: 10px;
+}
