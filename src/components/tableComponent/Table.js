@@ -15,6 +15,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import Button from '@material-ui/core/Button';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
+import RefreshIcon from '@material-ui/icons/Refresh';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -56,9 +57,23 @@ const useStyles = makeStyles((theme) => ({
         maxHeight: '60vh',
         overflow: 'auto',
     },
+
+    textEllipsisContainer: {
+      whiteSpace: 'nowrap',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+    },
+
+    textNoEllipsisContainer: {
+      whiteSpace: 'nowrap',
+    },
   
     table: {
         minWidth: 750,
+    },
+
+    refresh: {
+      cursor: 'pointer',
     },
     visuallyHidden: {
         border: 0,
@@ -72,6 +87,9 @@ const useStyles = makeStyles((theme) => ({
         width: 1,
     },
     titleBar: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
         height: '5vh',
         background: '#091224',
         color: 'white',
@@ -143,13 +161,14 @@ export default function DataTable(props) {
   const classes = useStyles();
   const options = [10, 20, 50];
   const [order, setOrder] = useState('asc');
-  const [orderBy, setOrderBy] = useState('calories');
+  const [orderBy, setOrderBy] = useState('');
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [rows, setRows] = useState([]);
   const [searched, setSearched] = useState('');
+  const [ellipsis, setEllipsis] = useState(false);
 
   //user and todo data
   const data = props.data
@@ -184,18 +203,43 @@ export default function DataTable(props) {
     setSearched(event.target.value);    
   }
 
+  const refresh = () => {
+    setSearched('');
+    setPage(1);
+    setSelectedIndex(0);
+    setRowsPerPage(10);
+    setOrder('asc');
+    setOrderBy('');
+  }
+
+  const handleEllipsis = (e, b) => {
+    console.log(e.target.textContent);
+    setEllipsis(b)
+  }
+
   useEffect(() => {
     const filterRows = data.filter((row) => {
-      return row.username.toLowerCase().includes(searched.toLowerCase());
+      return (props.title === 'User' ? 
+             row.username.toLowerCase().includes(searched.toLowerCase())|| 
+             row.name.toLowerCase().includes(searched.toLocaleLowerCase()) ||
+             row.website.toLowerCase().includes(searched.toLocaleLowerCase()) ||
+             row.email.toLowerCase().includes(searched.toLowerCase()) ||
+             row.phone.includes(searched) ||
+             row.address.toLowerCase().includes(searched.toLowerCase())
+             :
+             row.username.toLowerCase().includes(searched.toLowerCase()) ||
+             row.title.toLowerCase().includes(searched.toLowerCase()) ||
+             row.completed.toLowerCase().includes(searched.toLowerCase()));
     });
     setRows(filterRows);
-  }, [searched])
+  }, [searched, ellipsis])
 
   const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
   return (
     <div className={ classes.root}>
         <div className={classes.titleBar}>
             <p>{props.title}</p>
+            <RefreshIcon className={classes.refresh} onClick={refresh}/>
         </div>
         <div className={ classes.searchBar}>
             <div className={classes.search}>
@@ -279,13 +323,25 @@ export default function DataTable(props) {
                     >
                       {headCells.map((column) => {
                         const value = row[column.id];
-                        return (   
-                             <TableCell 
-                              key={column.id}            
-                              align={column.booleanType ? 'right' : 'left'}
-                              padding={column.disablePadding ? 'none' : 'normal'}>
-                                { !column.booleanType ? value : row.completed ? 'Complete' : 'Incomplete' }
-                              </TableCell>                  
+                        return (
+                           value.length > 20 && !ellipsis?
+                              <TableCell 
+                                key={column.id}            
+                                align={column.booleanType ? 'right' : 'left'}
+                                padding={column.disablePadding ? 'none' : 'normal'}
+                                onClick={(event) => handleEllipsis(event, true)}
+                                >
+                                <div className={classes.textEllipsisContainer}>{value.substring(0, 20) + '...'}</div>
+                                </TableCell> :
+ 
+                                <TableCell 
+                                key={column.id}            
+                                align={column.booleanType ? 'right' : 'left'}
+                                padding={column.disablePadding ? 'none' : 'normal'}
+                                onClick={(event) => handleEllipsis(event, false)}
+                                >
+                                   <div className={classes.textEllipsisContainer}>{value}</div> 
+                                </TableCell>                                  
                         )
                       })}
                     </TableRow>

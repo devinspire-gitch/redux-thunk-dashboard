@@ -10,8 +10,8 @@ import { connect } from 'react-redux';
 import fetchUsers from './actions/FetchUserData';
 import fetchTodos from './actions/FetchTodoData';
 
-function createUserData(username, name, website, email, phone, address, company) {
-  return { username, name, website, email, phone, address, company };
+function createUserData(username, name, website, email, phone, address) {
+  return { username, name, website, email, phone, address };
 }
 
 function createTodoData(Id, username, title, completed) {
@@ -28,12 +28,12 @@ function App({fetchUserData, fetchUsers, fetchTodoData, fetchTodos}) {
   }, [])
 
   fetchUserData.users.forEach(user => {
-    userData.push(createUserData(user.username, user.name, user.website, user.email, user.phone, user.address.street + ',' + user.address.suite + ',' + user.address.city, user.company.name));
+    userData.push(createUserData(user.username, user.name, user.website, user.email, user.phone, user.address.street + ',' + user.address.suite + ',' + user.address.city));
   });
 
   if(fetchUserData.users.length !== 0){
     fetchTodoData.todos.forEach(todo => {
-      todoData.push(createTodoData(todo.id,  fetchUserData.users[Number(todo.userId) - 1].username, todo.title, todo.completed));
+      todoData.push(createTodoData(todo.id,  fetchUserData.users[Number(todo.userId) - 1].username, todo.title, todo.completed ? 'Complete' : 'Incomplete'));
     })
   }
   
@@ -46,8 +46,8 @@ function App({fetchUserData, fetchUsers, fetchTodoData, fetchTodos}) {
         : fetchUserData.error || fetchTodoData.error ? 
           <p>{ fetchUserData.error + fetchTodoData }</p>
         : <>
-        <DataTable data={userData} headerData={userHeadCells} title='Usres'/>
-        <DataTable data={todoData} headerData={todoHeadCells} title='To Do'/> </>}
+        <DataTable data={userData} headerData={userHeadCells} title='User' className='userTable'/>
+        <DataTable data={todoData} headerData={todoHeadCells} title='To Do' className='todoTable'/> </>}
       </div>
       <Footer />
     </div>
